@@ -50,6 +50,4 @@
 		echo "no POST data";
 	}
 
-	echo 'ok';
-
 ?>

@@ -11,11 +11,27 @@
 			$the_result = mysqli_fetch_array($result);
 			$the_code = $the_result[1];
 			$the_lang = $the_result[2];
+			$show_html = true;
 		} elseif ( preg_match('/^[A-Za-z0-9]+\.[A-Za-z0-9]+$/', $the_id) ) {
-			$result = mysqli_query($the_SQL,"SELECT id, code FROM codes WHERE id='$the_id'");
+			$result = mysqli_query($the_SQL,"SELECT id, code FROM codes WHERE id='".explode(".",$the_id)[0]."'");
 			$the_code = mysqli_fetch_array($result)[1];
-			echo $the_code;
-			exit(0);
+			$the_code = str_replace("&amp;", "&",$the_code);
+			$the_code = str_replace("&#39;", "'",$the_code);
+			$the_code = str_replace("&#42;", "\"",$the_code);
+			$the_code = str_replace("&#61;", "=",$the_code);
+			$the_code = str_replace("&#63;", "?",$the_code);
+			$the_code = str_replace("&#92;", "\\",$the_code);
+			$the_code = str_replace("&lt;", "<",$the_code);
+			$the_code = str_replace("&gt;", ">",$the_code);
+			header('Content-Type: text/plain; charset=utf-8');
+			header('Accept-Ranges: bytes ');
+			header('Content-type: application/octet-stream ');
+			header('Expires: 0');
+			header('Pragma: public');
+			header('Content-Length: '.strlen($the_code));
+			echo $the_code.'
+';
+			// exit;
 		}
 	}
 
@@ -27,8 +43,8 @@
 			return 'code.php?n='.$the_id.'.raw';
 		}
 	}
-?>
 
+if($show_html): ?>
 <html>
 	<head>
 		<meta charset="utf-8" />
@@ -172,3 +188,4 @@
 		</div>
 	</body>
 </html>
+<?php endif; ?>
